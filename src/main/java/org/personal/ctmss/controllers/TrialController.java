@@ -3,6 +3,7 @@ package org.personal.ctmss.controllers;
 
 import jakarta.validation.Valid;
 import org.personal.ctmss.dtos.TrialUpdateRequest;
+import org.personal.ctmss.entity.Status;
 import org.personal.ctmss.entity.Trial;
 import org.personal.ctmss.services.TrialService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,11 @@ public class TrialController {
     }
 
     @GetMapping
-    public List<Trial> getAllTrails(){
-        return trialService.getTrails();
+    public List<Trial> getAllTrails(@RequestParam(required = false) Status status){
+        if (status == null){
+            return trialService.getTrails();
+        }
+       return trialService.findByStatus(status);
     }
 
     @GetMapping("/{id}")
