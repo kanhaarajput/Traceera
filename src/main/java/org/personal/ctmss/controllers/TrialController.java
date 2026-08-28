@@ -2,6 +2,7 @@ package org.personal.ctmss.controllers;
 
 
 import jakarta.validation.Valid;
+import org.personal.ctmss.dtos.TrialUpdateRequest;
 import org.personal.ctmss.entity.Trial;
 import org.personal.ctmss.services.TrialService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/trails")
@@ -27,6 +29,24 @@ public class TrialController {
     @GetMapping
     public List<Trial> getAllTrails(){
         return trialService.getTrails();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Trial> getTrialById(@PathVariable UUID id){
+        Trial trial = trialService.getTrailById(id);
+        return ResponseEntity.ok(trial);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Trial> updateTrial(@PathVariable UUID id , @Valid @RequestBody TrialUpdateRequest update){
+        Trial request = trialService.updateTrail(id , update);
+        return ResponseEntity.ok(request);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTrail(@PathVariable UUID id) {
+        trialService.deleteTrail(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
