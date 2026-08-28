@@ -1,11 +1,13 @@
 package org.personal.ctmss.services;
 
+import org.personal.ctmss.dtos.TrialUpdateRequest;
 import org.personal.ctmss.entity.Trial;
 import org.personal.ctmss.repository.TrialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TrialService {
@@ -19,5 +21,98 @@ public class TrialService {
 
     public List<Trial> getTrails(){
         return trialRepository.findAll();
+    }
+
+    public Trial getTrailById(UUID trialId){
+        return trialRepository.getReferenceById(trialId);
+    }
+
+    public Trial updateTrail(UUID id, TrialUpdateRequest request) {
+
+        Trial existing = trialRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Trail not found"));
+
+        if (request.getProtocol_no() != null) {
+            existing.setProtocol_no(request.getProtocol_no());
+        }
+
+        if (request.getTrail_code() != null) {
+            existing.setTrail_code(request.getTrail_code());
+        }
+
+        if (request.getTitle() != null) {
+            existing.setTitle(request.getTitle());
+        }
+
+        if (request.getShort_title() != null) {
+            existing.setShort_title(request.getShort_title());
+        }
+
+        if (request.getStudy_phase() != null) {
+            existing.setStudy_phase(request.getStudy_phase());
+        }
+
+        if (request.getStudy_type() != null) {
+            existing.setStudy_type(request.getStudy_type());
+        }
+
+        if (request.getStatus() != null) {
+            existing.setStatus(request.getStatus());
+        }
+
+        if (request.getSponsor_team() != null) {
+            existing.setSponsor_team(request.getSponsor_team());
+        }
+
+        if (request.getPrinciple_investigator() != null) {
+            existing.setPrinciple_investigator(request.getPrinciple_investigator());
+        }
+
+        if (request.getIntervention_name() != null) {
+            existing.setIntervention_name(request.getIntervention_name());
+        }
+
+        if (request.getIntervention_type() != null) {
+            existing.setIntervention_type(request.getIntervention_type());
+        }
+
+        if (request.getTarget_patient() != null) {
+            existing.setTarget_patient(request.getTarget_patient());
+        }
+
+        if (request.getStart_date() != null) {
+            existing.setStart_date(request.getStart_date());
+        }
+
+        if (request.getExpected_end_date() != null) {
+            existing.setExpected_end_date(request.getExpected_end_date());
+        }
+
+        if (request.getActual_end_date() != null) {
+            existing.setActual_end_date(request.getActual_end_date());
+        }
+
+        if (request.getDescription() != null) {
+            existing.setDescription(request.getDescription());
+        }
+
+        if (request.getPrimary_objective() != null) {
+            existing.setPrimary_objective(request.getPrimary_objective());
+        }
+
+        if (request.getSecondary_objective() != null) {
+            existing.setSecondary_objective(request.getSecondary_objective());
+        }
+
+        return trialRepository.save(existing);
+    }
+
+    public void deleteTrail(UUID id) {
+
+        if (!trialRepository.existsById(id)) {
+            throw new RuntimeException("Trail not found");
+        }
+
+       trialRepository.deleteById(id);
     }
 }
