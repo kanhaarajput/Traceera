@@ -6,6 +6,8 @@ import org.personal.ctmss.entity.Trial;
 import org.personal.ctmss.exceptions.ResourceNotFoundException;
 import org.personal.ctmss.repository.TrialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +23,8 @@ public class TrialService {
         return trialRepository.save(trial);
     }
 
-    public List<Trial> getTrails(){
-        return trialRepository.findAll();
+    public Page<Trial> getTrails(Pageable pageable){
+        return trialRepository.findAll(pageable);
     }
 
     public Trial getTrailById(UUID trialId){
@@ -118,8 +120,8 @@ public class TrialService {
        trialRepository.deleteById(id);
     }
 
-    public List<Trial> findByStatus(Status status){
-        List<Trial> trials = trialRepository.findByStatus(status);
-        return trials;
+    public Page<Trial> findByStatus(Status status , Pageable pageable){
+
+        return  trialRepository.findByStatus(status , pageable);
     }
 }
