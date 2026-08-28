@@ -7,6 +7,9 @@ import org.personal.ctmss.entity.Status;
 import org.personal.ctmss.entity.Trial;
 import org.personal.ctmss.services.TrialService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +31,11 @@ public class TrialController {
     }
 
     @GetMapping
-    public List<Trial> getAllTrails(@RequestParam(required = false) Status status){
+    public Page<Trial> getAllTrails(@RequestParam(required = false) Status status , @PageableDefault(size = 10 , sort = "id")Pageable pageable ){
         if (status == null){
-            return trialService.getTrails();
+            return trialService.getTrails(pageable);
         }
-       return trialService.findByStatus(status);
+       return trialService.findByStatus(status,pageable);
     }
 
     @GetMapping("/{id}")
