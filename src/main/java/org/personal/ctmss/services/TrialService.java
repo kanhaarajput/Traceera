@@ -1,7 +1,9 @@
 package org.personal.ctmss.services;
 
 import org.personal.ctmss.dtos.TrialUpdateRequest;
+import org.personal.ctmss.entity.Status;
 import org.personal.ctmss.entity.Trial;
+import org.personal.ctmss.exceptions.ResourceNotFoundException;
 import org.personal.ctmss.repository.TrialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,13 +26,13 @@ public class TrialService {
     }
 
     public Trial getTrailById(UUID trialId){
-        return trialRepository.getReferenceById(trialId);
+        return trialRepository.findById(trialId).orElseThrow(()-> new ResourceNotFoundException("Trial not found with id " + trialId));
     }
 
     public Trial updateTrail(UUID id, TrialUpdateRequest request) {
 
         Trial existing = trialRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trail not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Trial not found with id " + id));
 
         if (request.getProtocol_no() != null) {
             existing.setProtocol_no(request.getProtocol_no());
@@ -114,5 +116,10 @@ public class TrialService {
         }
 
        trialRepository.deleteById(id);
+    }
+
+    public List<Trial> findByStatus(Status status){
+        List<Trial> trials = trialRepository.findByStatus(status);
+        return trials;
     }
 }
