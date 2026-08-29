@@ -19,8 +19,8 @@ public class TrialService {
     @Autowired
     private TrialRepository trialRepository;
 
-    public Trial createTrail(Trial trial){
-        return trialRepository.save(trial);
+    public List<Trial> createTrail(List<Trial> trial){
+        return trialRepository.saveAll(trial);
     }
 
     public Page<Trial> getTrails(Pageable pageable){
