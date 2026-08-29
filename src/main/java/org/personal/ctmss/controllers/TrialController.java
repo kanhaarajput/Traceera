@@ -25,8 +25,8 @@ public class TrialController {
     private TrialService trialService;
 
     @PostMapping
-    public ResponseEntity<Trial> createTrail(@Valid @RequestBody Trial trial){
-        Trial saved = trialService.createTrail(trial);
+    public ResponseEntity<List<Trial>> createTrail(@Valid @RequestBody List<Trial> trial){
+        List<Trial> saved = trialService.createTrail(trial);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
