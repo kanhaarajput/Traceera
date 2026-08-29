@@ -46,7 +46,8 @@ public class TrialSite {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private SiteStatus site_status;
+    @Column(name = "site_status")
+    private SiteStatus siteStatus;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

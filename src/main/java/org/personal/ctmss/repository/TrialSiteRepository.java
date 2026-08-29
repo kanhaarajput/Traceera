@@ -13,5 +13,5 @@ import java.util.UUID;
 @Repository
 public interface TrialSiteRepository extends JpaRepository<TrialSite, UUID> {
 
-    Page<TrialSite> fingByStatus(SiteStatus status , Pageable pageble);
+    Page<TrialSite> findBySiteStatus(SiteStatus status , Pageable pageble);
 }

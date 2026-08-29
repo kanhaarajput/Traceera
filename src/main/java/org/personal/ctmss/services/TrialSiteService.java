@@ -35,6 +35,6 @@ public class TrialSiteService {
     }
 
     public Page<TrialSite> findByStatus (SiteStatus status , Pageable pageble){
-        return trialSiteRepository.fingByStatus(status,pageble);
+        return trialSiteRepository.findBySiteStatus(status, pageble);
     }
 }
