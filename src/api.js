@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const API_URL = ''; // Rely on proxy (vite.config.js / vercel.json)
-const API_TOKEN = import.meta.env.VITE_API_TOKEN || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBjdG1zcy5vcmciLCJyb2xlcyI6WyJST0xFX0FETUlOIiwiUk9MRV9QSSIsIlJPTEVfUFYiXSwiaWF0IjoxNzg4MTE1MjQ1LCJleHAiOjE4MTk2NTEyNDV9.0O-qQRZdtskCqnpI5adCKEsFuzhWJehouzZjCA8ULY4';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -10,8 +9,9 @@ const api = axios.create({
 // Add a request interceptor to append the token
 api.interceptors.request.use(
   (config) => {
-    if (API_TOKEN) {
-      config.headers['Authorization'] = `Bearer ${API_TOKEN}`;
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },

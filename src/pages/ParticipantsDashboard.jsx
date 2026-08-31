@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import { Users, UserCheck, UserX, RefreshCw, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, UserCheck, UserX, RefreshCw, Search, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import NewPatientModal from '../components/NewPatientModal';
 
 const statusBadge = (status) => {
   const s = (status || '').toUpperCase();
@@ -23,22 +24,25 @@ const ParticipantsDashboard = () => {
   const [search, setSearch]     = useState('');
   const [errorMsg, setErrorMsg] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const itemsPerPage = 10;
   const navigate = useNavigate();
 
+  const fetchPatients = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/api/patients?size=1000');
+      setPatients(res.data.content || res.data);
+      setErrorMsg(null);
+    } catch (err) {
+      console.error('Error fetching patients:', err.message, err.response);
+      setErrorMsg(err.response?.data?.message || err.message || 'Unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const res = await api.get('/api/patients?size=1000');
-        setPatients(res.data.content || res.data);
-        setErrorMsg(null);
-      } catch (err) {
-        console.error('Error fetching patients:', err.message, err.response);
-        setErrorMsg(err.response?.data?.message || err.message || 'Unknown error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchPatients();
   }, []);
 
@@ -69,8 +73,16 @@ const ParticipantsDashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 tracking-tight uppercase drop-shadow-sm">Participant Profile Dashboard</h2>
+    <div className="space-y-6 animate-fade-in pb-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 tracking-tight uppercase drop-shadow-sm">Participant Profile Dashboard</h2>
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-sm shadow-purple-500/20"
+        >
+          <Plus size={16} /> Add Participant
+        </button>
+      </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-4 gap-4">
@@ -193,6 +205,12 @@ const ParticipantsDashboard = () => {
           </div>
         </div>
       </div>
+      
+      <NewPatientModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={fetchPatients} 
+      />
     </div>
   );
 };

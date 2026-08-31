@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../api';
 
 const AuthContext = createContext();
 
@@ -24,18 +25,14 @@ export const AuthProvider = ({ children }) => {
       const response = await api.post('/api/auth/login', { username, password });
       
       if (response.data && response.data.token) {
-        const token = response.data.token;
+        const { token, username: resUsername, role } = response.data;
         localStorage.setItem('auth_token', token);
         
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const payload = JSON.parse(window.atob(base64));
-        
         const userData = {
-          name: payload.sub || username,
-          role: Array.isArray(payload.roles) ? payload.roles[0] : (payload.role || 'User'),
-          email: `${payload.sub || username}@traceera.org`,
-          avatar: `https://ui-avatars.com/api/?name=${payload.sub || username}&background=0D8ABC&color=fff`
+          name: resUsername || username,
+          role: role || 'User',
+          email: `${resUsername || username}@traceera.org`,
+          avatar: `https://ui-avatars.com/api/?name=${resUsername || username}&background=0D8ABC&color=fff`
         };
         
         setUser(userData);
@@ -46,29 +43,14 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.response?.data?.message || err.response?.data || 'Invalid username or password. Please try again.');
+      setError(err.response?.data?.message || err.response?.data || 'Invalid username or password');
       return false;
     } finally {
       setLoading(false);
     }
   };
 
-  const register = async (username, password, role = 'ADMIN') => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      await api.post('/api/auth/register', { username, password, role });
-      
-      return await login(username, password);
-    } catch (err) {
-      console.error('Registration error:', err);
-      setError(err.response?.data?.message || err.response?.data || 'Registration failed. Username might be taken.');
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const logout = () => {
     setUser(null);
@@ -79,7 +61,6 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     login,
-    register,
     logout,
     loading,
     error

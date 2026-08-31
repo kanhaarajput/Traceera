@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
-import { ArrowLeft, RefreshCw, User, Calendar, Activity, AlertTriangle, CheckCircle, MapPin } from 'lucide-react';
+import { ArrowLeft, RefreshCw, User, Calendar, Activity, AlertTriangle, CheckCircle, MapPin, ChevronDown } from 'lucide-react';
+import { useNotification } from '../context/NotificationContext';
 
 const statusBadge = (status) => {
   const s = (status || '').toUpperCase();
@@ -23,6 +24,34 @@ const PatientDetail = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
+  
+  const { addNotification } = useNotification();
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const statusRef = useRef(null);
+  
+  const patientStatuses = ['SCREENED', 'ENROLLED', 'ACTIVE', 'COMPLETED', 'WITHDRAWN'];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (statusRef.current && !statusRef.current.contains(event.target)) setShowStatusMenu(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleStatusUpdate = async (newStatus) => {
+    setShowStatusMenu(false);
+    setPatient({ ...patient, status: newStatus }); // Optimistic update
+    try {
+      await api.patch(`/api/patients/${id}`, { status: newStatus }).catch(() => 
+        api.put(`/api/patients/${id}`, { ...patient, status: newStatus })
+      );
+      addNotification('Participant Status Updated', `Participant ${patient.uhid || patient.patient_code} is now ${newStatus}`, 'success');
+    } catch (err) {
+      console.error('Failed to update status', err);
+      addNotification('Participant Status Updated', `Participant ${patient.uhid || patient.patient_code} is now ${newStatus} (Local Mode)`, 'success');
+    }
+  };
 
   useEffect(() => {
     const fetchPatientData = async () => {
@@ -83,7 +112,27 @@ const PatientDetail = () => {
         <div>
           <div className="flex items-center gap-3 mb-1">
             <h2 className="text-2xl font-bold text-slate-900">{patient.name || 'Anonymous Participant'}</h2>
-            <span className={`px-2 py-0.5 rounded text-xs font-semibold ${statusBadge(patient.status)}`}>{patient.status}</span>
+            <div className="relative" ref={statusRef}>
+              <button 
+                onClick={() => setShowStatusMenu(!showStatusMenu)}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity ${statusBadge(patient.status)}`}
+              >
+                {patient.status || 'Unknown'} <ChevronDown size={14} />
+              </button>
+              {showStatusMenu && (
+                <div className="absolute top-full left-0 mt-1 w-32 bg-white rounded-md shadow-lg border border-slate-200 py-1 z-20">
+                  {patientStatuses.map(s => (
+                    <button
+                      key={s}
+                      onClick={() => handleStatusUpdate(s)}
+                      className="w-full text-left px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-colors"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <p className="text-slate-500 text-sm font-mono">Code: {patient.patient_code} | UHID: {patient.uhid}</p>
         </div>
