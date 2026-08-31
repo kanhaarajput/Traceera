@@ -1,5 +1,6 @@
 package org.personal.ctmss.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @Table(name="trial_site")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TrialSite {
 
     @Id
@@ -23,6 +25,7 @@ public class TrialSite {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="trial_id" , nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Trial trial ;
 
     @NotNull

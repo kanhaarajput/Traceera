@@ -1,5 +1,6 @@
 package org.personal.ctmss.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +16,8 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@Table(name =" patient")
+@Table(name = "patient")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Patient {
 
     @Id
@@ -24,10 +26,12 @@ public class Patient {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trial_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Trial trial;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private TrialSite site;
 
     @NotNull
@@ -35,11 +39,11 @@ public class Patient {
 
     @NotNull
     @Column(nullable = false, unique = true)
-    private String uhid; // hospital/govt ID hash — enforces 1 patient = 1 trial ever
+    private String uhid;
 
     @NotNull
     @Column(nullable = false, unique = true)
-    private String patient_code; // trial-specific screening ID
+    private String patient_code;
 
     @Min(0)
     private Integer age;
@@ -49,21 +53,25 @@ public class Patient {
     @NotNull
     private LocalDate enrollment_date;
 
-    @NotNull @Enumerated(EnumType.STRING)
+    @NotNull
+    @Enumerated(EnumType.STRING)
     private PatientStatus status;
 
-    @NotNull @Enumerated(EnumType.STRING)
+    @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "consent_status")
     private ConsentStatus consentStatus;
 
     @Column(name = "consent_date")
     private LocalDate consentDate;
-    @Column(name="withdrawal_reason")
+
+    @Column(name = "withdrawal_reason")
     private String withdrawalReason;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant created_at;
+
     @UpdateTimestamp
     @Column(nullable = false)
     private Instant updated_at;

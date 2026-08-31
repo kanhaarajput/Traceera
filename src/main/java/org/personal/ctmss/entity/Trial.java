@@ -1,5 +1,6 @@
 package org.personal.ctmss.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "trails")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Trial {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
