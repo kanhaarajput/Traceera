@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://ctmss.onrender.com';
+const API_URL = ''; // Rely on proxy (vite.config.js / vercel.json)
 const API_TOKEN = import.meta.env.VITE_API_TOKEN || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBjdG1zcy5vcmciLCJyb2xlcyI6WyJST0xFX0FETUlOIiwiUk9MRV9QSSIsIlJPTEVfUFYiXSwiaWF0IjoxNzg4MTE1MjQ1LCJleHAiOjE4MTk2NTEyNDV9.0O-qQRZdtskCqnpI5adCKEsFuzhWJehouzZjCA8ULY4';
 
 const api = axios.create({
